@@ -1,0 +1,19 @@
+shelltitle "$ |bash"
+
+# change the hardstatus settings to give an window list at the bottom of the
+# screen, with the time and date and with the current window highlighted
+hardstatus             alwayslastline
+
+# For white on black background
+# hardstatus string '%{= kG}[ %{G}%H %{g}][%= %{= kw}%?%-Lw%?%{r}(%{W}%n*%f%t%?(%u)%?%{r})%{w}%?%+Lw%?%?%= %{g}][%{B} %m/%d %{W}%c %{g}]'
+
+# For black on white background
+hardstatus string '%{= }[ %{k}%H ][%= %{= }%?%-Lw%?%{r}(%{k}%n*%f%t%?(%u)%?%{r})%{k}%?%+Lw%?%?%= ][ %m/%d %{k}%c %{k}]'
+
+startup_message       off
+autodetach             on
+
+# make the shell in every window a login shell
+shell -$SHELL
+
+
