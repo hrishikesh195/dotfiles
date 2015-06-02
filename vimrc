@@ -123,7 +123,7 @@ endif
 let mapleader=','
 se nu
 
-colorscheme github
+silent! colorscheme github
 " Uncomment the following line if using the default colorscheme instead of the
 " above
 " highlight LineNr ctermfg=gray
