@@ -15,11 +15,12 @@ call vundle#begin()
 " let Vundle manage Vundle, required
 Plugin 'gmarik/Vundle.vim'
 
-Plugin 'rust-lang/rust.vim'
 Plugin 'Lokaltog/vim-easymotion'
 Plugin 'tomtom/tcomment_vim'
 Plugin 'scrooloose/nerdtree'
 Plugin 'tpope/vim-fugitive'
+Plugin 'fatih/vim-go'
+Plugin 'github-theme'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -73,12 +74,24 @@ if has("autocmd")
   autocmd FileType text setlocal textwidth=78
   au FileType python setlocal tabstop=4 expandtab shiftwidth=4 softtabstop=4
   au FileType haskell setlocal tabstop=4 expandtab shiftwidth=4 softtabstop=4 shiftround
-  au FileType markdown setlocal textwidth=78
+  au FileType markdown setlocal textwidth=78 expandtab ts=4 sts=4 sw=4
   au FileType javascript setlocal ts=4 expandtab sw=4 sts=4 textwidth=78
   au FileType html setlocal ts=4 expandtab sw=4 sts=4
-  au! BufRead,BufNewFile *.txt   setfiletype text
-  autocmd FileType cpp   set tabstop=8 shiftwidth=4 textwidth=80 sts=4 expandtab
-  autocmd FileType c    set tabstop=8 shiftwidth=8 textwidth=80 sts=8 noexpandtab
+  au! BufRead,BufNewFile *.txt setfiletype text
+  autocmd FileType cpp setlocal tabstop=4 shiftwidth=4 textwidth=80 sts=4 expandtab
+  autocmd FileType c setlocal tabstop=8 shiftwidth=8 textwidth=80 sts=8 noexpandtab
+
+  " For go files
+  au! BufRead,BufNewFile *.go setfiletype go
+  au FileType go hi goSpaceError ctermfg=white
+  " au FileType go nmap <Leader>r :!go run %<CR>
+  au FileType go nmap <Leader>r <Plug>(go-run)
+  au FileType go nmap <leader>b <Plug>(go-build)
+  au FileType go nmap <leader>t <Plug>(go-test)
+  au FileType go nmap <leader>c <Plug>(go-coverage)
+  au FileType go nmap <leader>c <Plug>(go-coverage)
+  au FileType go nmap <Leader>s <Plug>(go-implements)
+  au FileType go nmap <Leader>i :GoImports<CR>
 
   " When editing a file, always jump to the last known cursor position.
   " Don't do it when the position is invalid or when inside an event handler
@@ -101,20 +114,26 @@ endif " has("autocmd")
 " Convenient command to see the difference between the current buffer and the
 " file it was loaded from, thus the changes you made.
 " Only define it when not defined already.
+" Use C-w C-o (or :only) and then :diffoff to go back to original
 if !exists(":DiffOrig")
   command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis
 		  \ | wincmd p | diffthis
 endif
 
-se sw=4
 let mapleader=','
 se nu
-highlight LineNr ctermfg=gray
+
+colorscheme github
+" Uncomment the following line if using the default colorscheme instead of the
+" above
+" highlight LineNr ctermfg=gray
 
 nnoremap <Leader>r :!./a.out<CR>
 
-" Copy current file to clipboard (Mac)
-nnoremap <Leader>c :!pbcopy <%<CR><CR>
+" Copy entire buffer to clipboard (Mac)
+nnoremap <Leader>c :%w !pbcopy<CR><CR>
+" Copy visual mode selection to clipboard (Mac)
+vnoremap <Leader>c :w !pbcopy<CR><CR>
 
 " Perforce
 " p4 edit the current file
@@ -133,8 +152,8 @@ map <Leader>t :NERDTreeToggle<CR>
 " For GNU Global
 " Run 'gtags' in root directory to generate tags; 'global -u' to update
 nnoremap <Leader>g :GtagsCursor<CR>
-ab gt Gtags
 nnoremap <C-n> :cn<CR>
 nnoremap <C-p> :cp<CR>
 nnoremap <C-l> :ccl<CR>
-
+" Type C-v after last character to avoid expansion
+cnoreabbrev gt Gtags
