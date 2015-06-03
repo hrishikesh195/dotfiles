@@ -1,3 +1,6 @@
+# Comment out the next line if screen was not compiled with 256 color support
+term screen-256color
+
 shelltitle "$ |bash"
 
 # change the hardstatus settings to give an window list at the bottom of the
@@ -15,5 +18,3 @@ autodetach             on
 
 # make the shell in every window a login shell
 shell -$SHELL
-
-

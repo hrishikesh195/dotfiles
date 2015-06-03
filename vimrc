@@ -123,10 +123,12 @@ endif
 let mapleader=','
 se nu
 
-silent! colorscheme github
-" Uncomment the following line if using the default colorscheme instead of the
-" above
-" highlight LineNr ctermfg=gray
+if &t_Co > 255 || has("gui_running")
+  silent! colorscheme github
+else
+  " uses the default colorscheme
+  highlight LineNr ctermfg=gray
+endif
 
 nnoremap <Leader>r :!./a.out<CR>
 
