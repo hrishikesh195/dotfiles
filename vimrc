@@ -21,6 +21,8 @@ Plugin 'scrooloose/nerdtree'
 Plugin 'tpope/vim-fugitive'
 Plugin 'fatih/vim-go'
 Plugin 'github-theme'
+" Plugin 'AutoComplPop'
+" Plugin 'Valloric/YouCompleteMe'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -46,9 +48,9 @@ set incsearch		" do incremental searching
 set wildmenu		" better command line completion
 
 " In many terminal emulators the mouse works just fine, thus enable it.
-if has('mouse')
-  set mouse=a
-endif
+" if has('mouse')
+"   set mouse=a
+" endif
 
 " Switch syntax highlighting on, when the terminal has colors
 " Also switch on highlighting the last used search pattern.
@@ -74,7 +76,7 @@ if has("autocmd")
   autocmd FileType text setlocal textwidth=78
   au FileType python setlocal tabstop=4 expandtab shiftwidth=4 softtabstop=4
   au FileType haskell setlocal tabstop=4 expandtab shiftwidth=4 softtabstop=4 shiftround
-  au FileType markdown setlocal textwidth=78 expandtab ts=4 sts=4 sw=4
+  au FileType markdown setlocal expandtab ts=4 sts=4 sw=4
   au FileType javascript setlocal ts=4 expandtab sw=4 sts=4 textwidth=78
   au FileType html setlocal ts=4 expandtab sw=4 sts=4
   au! BufRead,BufNewFile *.txt setfiletype text
@@ -87,11 +89,13 @@ if has("autocmd")
   " au FileType go nmap <Leader>r :!go run %<CR>
   au FileType go nmap <Leader>r <Plug>(go-run)
   au FileType go nmap <leader>b <Plug>(go-build)
-  au FileType go nmap <leader>t <Plug>(go-test)
-  au FileType go nmap <leader>c <Plug>(go-coverage)
-  au FileType go nmap <leader>c <Plug>(go-coverage)
+  au FileType go nmap <leader>T <Plug>(go-test)
+  " au FileType go nmap <leader>c <Plug>(go-coverage)
   au FileType go nmap <Leader>s <Plug>(go-implements)
+  au FileType go nmap <Leader>d <Plug>(go-def)
   au FileType go nmap <Leader>i :GoImports<CR>
+  au FileType go nmap <Leader>f :GoFmt<CR>
+  let g:go_fmt_command = "goimports"
 
   " When editing a file, always jump to the last known cursor position.
   " Don't do it when the position is invalid or when inside an event handler
@@ -147,6 +151,10 @@ set pastetoggle=<F9>
 " For markdown section/sub-section
 nnoremap <Leader>= yyp:s/./=/g<CR>:noh<CR>
 nnoremap <Leader>- yyp:s/./-/g<CR>:noh<CR>
+
+" Quote/unquote selection
+vnoremap <Leader>q :s/^/> /<CR>:noh<CR>
+vnoremap <Leader>Q :s/^> //<CR>:noh<CR>
 
 " nerdtree toggle
 map <Leader>t :NERDTreeToggle<CR>
