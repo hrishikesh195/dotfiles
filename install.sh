@@ -4,7 +4,7 @@
 dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 # Link the dotfiles
-files="vimrc screenrc gitignore_global"
+files="vimrc screenrc gitignore_global tmux.conf"
 for f in $files; do
 	ln -s "$dir/$f" ~/."$f"
 done

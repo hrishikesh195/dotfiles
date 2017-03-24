@@ -73,7 +73,7 @@ if has("autocmd")
   au!
 
   " For all text files set 'textwidth' to 78 characters.
-  autocmd FileType text setlocal textwidth=78
+  autocmd FileType text setlocal textwidth=78 expandtab ts=4 sts=4 sw=4
   au FileType python setlocal tabstop=4 expandtab shiftwidth=4 softtabstop=4
   au FileType haskell setlocal tabstop=4 expandtab shiftwidth=4 softtabstop=4 shiftround
   au FileType markdown setlocal expandtab ts=4 sts=4 sw=4
@@ -81,7 +81,8 @@ if has("autocmd")
   au FileType html setlocal ts=4 expandtab sw=4 sts=4
   au! BufRead,BufNewFile *.txt setfiletype text
   autocmd FileType cpp setlocal tabstop=4 shiftwidth=4 textwidth=80 sts=4 expandtab
-  autocmd FileType c setlocal tabstop=8 shiftwidth=8 textwidth=80 sts=8 noexpandtab
+  " au! BufRead,BufNewFile,BufEnter *.h setfiletype c
+  autocmd FileType c setlocal tabstop=8 shiftwidth=8 textwidth=80 sts=8 noexpandtab shiftround
 
   " For go files
   au! BufRead,BufNewFile *.go setfiletype go
@@ -93,9 +94,15 @@ if has("autocmd")
   " au FileType go nmap <leader>c <Plug>(go-coverage)
   au FileType go nmap <Leader>s <Plug>(go-implements)
   au FileType go nmap <Leader>d <Plug>(go-def)
+  au FileType go nmap <Leader>D <Plug>(go-doc)
   au FileType go nmap <Leader>i :GoImports<CR>
   au FileType go nmap <Leader>f :GoFmt<CR>
+  au FileType go cnoreabbrev gd GoDoc
   let g:go_fmt_command = "goimports"
+
+  " For C files
+  au FileType c inoreabbrev (s (struct
+  au FileType c inoreabbrev s struct
 
   " When editing a file, always jump to the last known cursor position.
   " Don't do it when the position is invalid or when inside an event handler
@@ -156,8 +163,9 @@ nnoremap <Leader>- yyp:s/./-/g<CR>:noh<CR>
 vnoremap <Leader>q :s/^/> /<CR>:noh<CR>
 vnoremap <Leader>Q :s/^> //<CR>:noh<CR>
 
-" nerdtree toggle
+" nerdtree
 map <Leader>t :NERDTreeToggle<CR>
+map <Leader>f :NERDTreeFind<CR>
 
 " For GNU Global
 " Run 'gtags' in root directory to generate tags; 'global -u' to update
@@ -165,5 +173,6 @@ nnoremap <Leader>g :GtagsCursor<CR>
 nnoremap <C-n> :cn<CR>
 nnoremap <C-p> :cp<CR>
 nnoremap <C-l> :ccl<CR>
+nnoremap <C-t> :colder<CR>
 " Type C-v after last character to avoid expansion
 cnoreabbrev gt Gtags
