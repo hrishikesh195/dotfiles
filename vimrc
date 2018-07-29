@@ -20,9 +20,11 @@ Plugin 'tomtom/tcomment_vim'
 Plugin 'scrooloose/nerdtree'
 Plugin 'tpope/vim-fugitive'
 Plugin 'fatih/vim-go'
+Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'github-theme'
-" Plugin 'AutoComplPop'
-" Plugin 'Valloric/YouCompleteMe'
+Plugin 'wincent/command-t'
+Plugin 'rust-lang/rust.vim'
+Plugin 'racer-rust/vim-racer'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -48,9 +50,9 @@ set incsearch		" do incremental searching
 set wildmenu		" better command line completion
 
 " In many terminal emulators the mouse works just fine, thus enable it.
-" if has('mouse')
-"   set mouse=a
-" endif
+if has('mouse')
+  set mouse=a ttymouse=sgr
+endif
 
 " Switch syntax highlighting on, when the terminal has colors
 " Also switch on highlighting the last used search pattern.
@@ -79,30 +81,44 @@ if has("autocmd")
   au FileType markdown setlocal expandtab ts=4 sts=4 sw=4
   au FileType javascript setlocal ts=4 expandtab sw=4 sts=4 textwidth=78
   au FileType html setlocal ts=4 expandtab sw=4 sts=4
+  au FileType cpp setlocal tabstop=4 shiftwidth=4 textwidth=80 sts=4 expandtab
+  au FileType c setlocal tabstop=8 shiftwidth=8 textwidth=80 sts=8 noexpandtab shiftround
+
   au! BufRead,BufNewFile *.txt setfiletype text
-  autocmd FileType cpp setlocal tabstop=4 shiftwidth=4 textwidth=80 sts=4 expandtab
-  " au! BufRead,BufNewFile,BufEnter *.h setfiletype c
-  autocmd FileType c setlocal tabstop=8 shiftwidth=8 textwidth=80 sts=8 noexpandtab shiftround
 
   " For go files
   au! BufRead,BufNewFile *.go setfiletype go
   au FileType go hi goSpaceError ctermfg=white
-  " au FileType go nmap <Leader>r :!go run %<CR>
-  au FileType go nmap <Leader>r <Plug>(go-run)
   au FileType go nmap <leader>b <Plug>(go-build)
-  au FileType go nmap <leader>T <Plug>(go-test)
-  " au FileType go nmap <leader>c <Plug>(go-coverage)
-  au FileType go nmap <Leader>s <Plug>(go-implements)
-  au FileType go nmap <Leader>d <Plug>(go-def)
-  au FileType go nmap <Leader>D <Plug>(go-doc)
-  au FileType go nmap <Leader>i :GoImports<CR>
-  au FileType go nmap <Leader>f :GoFmt<CR>
+  au FileType go nmap <Leader>R <Plug>(go-run)
+  au FileType go nmap <Leader>r <Plug>(go-referrers)
+  au FileType go nmap <Leader>i <Plug>(go-implements)
+  au FileType go nmap <Leader>d <Plug>(go-doc-vertical)
+  au FileType go set mouse=a ttymouse=sgr	" for ctrl+click, scrolling, navigation
   au FileType go cnoreabbrev gd GoDoc
   let g:go_fmt_command = "goimports"
+  let g:go_list_type = "quickfix"
+  let g:go_doc_max_height = 50
 
-  " For C files
+  " For rust files
+  " let g:rustfmt_autosave = 1
+  au FileType rust nmap gd <Plug>(rust-def)
+  au FileType rust nmap gs <Plug>(rust-def-split)
+  au FileType rust nmap gx <Plug>(rust-def-vertical)
+  au FileType rust nmap <leader>gd <Plug>(rust-doc)
+  au FileType rust nmap <Leader>R :w<CR> :!cargo run<CR>
+
+  " Transcript files. Insert a timestamp every time Enter is pressed in insert
+  " mode. This doesn't apply while editing in 'paste'.
+  au! BufRead,BufNewFile *.transcript setfiletype transcript
+  au FileType transcript inoremap <CR> <C-c>:put =system('date \"+(%I:%M:%S %p)\"')<CR>o<CR>
+  au FileType transcript set ts=4
+
+  " For C, C++ files
   au FileType c inoreabbrev (s (struct
   au FileType c inoreabbrev s struct
+  au FileType c,cpp nnoremap <C-t> :colder<CR>	" for use with GNU Global
+  " au! BufRead,BufNewFile,BufEnter *.h setfiletype c
 
   " When editing a file, always jump to the last known cursor position.
   " Don't do it when the position is invalid or when inside an event handler
@@ -141,12 +157,16 @@ else
   highlight LineNr ctermfg=gray
 endif
 
-nnoremap <Leader>r :!./a.out<CR>
-
 " Copy entire buffer to clipboard (Mac)
 nnoremap <Leader>c :%w !pbcopy<CR><CR>
-" Copy visual mode selection to clipboard (Mac)
-vnoremap <Leader>c :w !pbcopy<CR><CR>
+if has("clipboard")
+	set clipboard=unnamed
+else
+	" Copy visual mode selection to clipboard (Mac)
+	" This doesn't seem to work though; it copies the whole line instead
+	" of just the selected word, for example
+	vnoremap <Leader>c :w !pbcopy<CR><CR>
+endif " has("clipboard")
 
 " Perforce
 " p4 edit the current file
@@ -170,9 +190,26 @@ map <Leader>f :NERDTreeFind<CR>
 " For GNU Global
 " Run 'gtags' in root directory to generate tags; 'global -u' to update
 nnoremap <Leader>g :GtagsCursor<CR>
-nnoremap <C-n> :cn<CR>
-nnoremap <C-p> :cp<CR>
-nnoremap <C-l> :ccl<CR>
-nnoremap <C-t> :colder<CR>
+" nnoremap <C-t> :colder<CR>
 " Type C-v after last character to avoid expansion
 cnoreabbrev gt Gtags
+
+" For ctrlp
+let g:ctrlp_by_filename = 1	" toggle using c-d
+let g:ctrlp_regexp = 1		" toggle using c-r
+" let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:10,results:100'
+" nnoremap <Leader>p :CtrlP .<CR>
+
+" For command-t
+" let g:CommandTFileScanner = "git"
+let g:CommandTFileScanner = "watchman"
+let g:CommandTMaxFiles=1000000
+nnoremap <Leader>p :CommandT<CR>
+
+" Quickfix
+nnoremap <C-j> :cnext<CR>
+nnoremap <C-k> :cprev<CR>
+nnoremap <C-l> :cclose<CR>
+
+" Have run into E363 for some large files; use a bigger mem limit (in KB)
+set maxmempattern=32000
